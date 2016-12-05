@@ -1,10 +1,15 @@
-var http = require('http')
-  , fs   = require('fs')
-  , url  = require('url')
-  , admin = require("firebase-admin")
+var http   = require('http')
+  , fs     = require('fs')
+  , url    = require('url')
+  , admin  = require('firebase-admin')
+  , fcmapi = require('fcm-push')
 
 //Configure firebase connection
 var serviceAccount = require("./firebase.json")
+var cloudMessagingAccount = require("./cloudmessaging.json")
+
+//Configure firebase push
+var fcm = fcmapi(cloudMessagingAccount.server_key)
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount), 
