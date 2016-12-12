@@ -27,8 +27,10 @@ var inboxRef = db.ref("/request-inbox")
 
 inboxRef.on("child_added", function(snapshot, prevChildKey) {
   var newHelpRequest = snapshot.val()
-  console.log("New help request: " + newHelpRequest)
-  
+  sendHelpRequestNotifications(newHelpRequest.topics, newHelpRequest.title, newHelpRequest.body)
+  var snapshotRef = db.ref("/request-inbox/" + snapshot.key)
+  // TODO: move to pending
+  snapshotRef.set(null)
 })
 
 function sendHelpRequestNotifications(keywords, requestTitle, requestBody)
@@ -71,5 +73,15 @@ function sendNotificaton(token, title, body) {
   })
 }
 
-sendHelpRequestNotifications(['java', 'music'], 'Test Request', 'I need help with math and Java!')
-sendHelpRequestNotifications(['test_value_1'], 'This is a test', 'Test request from the server')
+function createDummyRequest(keywords, title, body, username) {
+  inboxRef.push().set({
+    topics: keywords,
+    title: title,
+    body: body,
+    user: username
+  })
+}
+
+createDummyRequest(['java', 'music'], 'Test Request', 'I need help with math and Java!', 'hello@rthr.me')
+// sendHelpRequestNotifications(['java', 'music'], 'Test Request', 'I need help with math and Java!')
+// sendHelpRequestNotifications(['test_value_1'], 'This is a test', 'Test request from the server')
