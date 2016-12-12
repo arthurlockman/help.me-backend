@@ -61,7 +61,8 @@ function sendNotificaton(token, title, body) {
           priority: 'high',
           notification: {
             title: title,
-            body: body
+            body: body,
+            sound: 'default'
           }
         }
   fcm.send(message, function(err, response) {
@@ -82,6 +83,6 @@ function createDummyRequest(keywords, title, body, username) {
   })
 }
 
-createDummyRequest(['java', 'music'], 'Test Request', 'I need help with math and Java!', 'hello@rthr.me')
+createDummyRequest(['java', 'math'], 'Test Request', 'I need help with math and Java!', 'hello@rthr.me')
 // sendHelpRequestNotifications(['java', 'music'], 'Test Request', 'I need help with math and Java!')
 // sendHelpRequestNotifications(['test_value_1'], 'This is a test', 'Test request from the server')
