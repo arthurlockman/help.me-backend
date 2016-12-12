@@ -1,8 +1,10 @@
-var http   = require('http')
-  , fs     = require('fs')
-  , url    = require('url')
-  , admin  = require('firebase-admin')
-  , fcmApi    = require('fcm-node')
+var http    = require('http')
+  , fs      = require('fs')
+  , url     = require('url')
+  , admin   = require('firebase-admin')
+  , fcmApi  = require('fcm-node')
+  , express = require('express')
+  , app     = express()
 
 //Configure firebase connection
 var serviceAccount = require("./firebase.json")
@@ -36,7 +38,6 @@ inboxRef.on("child_added", function(snapshot, prevChildKey) {
 function sendHelpRequestNotifications(keywords, requestTitle, requestBody)
 {
   profilesRef.once('value', function(v) {
-    // console.log(v.val())
     for (var attributename in v.val()) {
       var userKeywords = v.val()[attributename]['filters'].join('|').toLowerCase().split('|')
       var token = v.val()[attributename]['deviceToken']
@@ -84,6 +85,32 @@ function createDummyRequest(keywords, title, body, username) {
   })
 }
 
-createDummyRequest(['java', 'math'], 'Test Request', 'I need help with math and Java!', 'hello@rthr.me')
+app.get('/topics', function(req, res) {
+  var data = {
+    test: 'test'
+  }
+  profilesRef.once('value', function(v) {
+    var keywords = new Set()
+    for (var attributename in v.val()) {
+      var userKeywords = v.val()[attributename]['filters'].join('|').toLowerCase().split('|')
+      userKeywords.forEach(function(element) {
+        keywords.add(toTitleCase(element))
+      }, this);
+    }
+    res.end(JSON.stringify(Array.from(keywords)))
+  })
+})
+
+var server = app.listen(80, function () {
+  var host = server.address().address
+  var port = server.address().port
+  console.log("Server listening at http://%s:%s", host, port)
+})
+
+function toTitleCase(str)
+{
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})
+}
+// createDummyRequest(['java', 'math'], 'Test Request', 'I need help with math and Java!', 'hello@rthr.me')
 // sendHelpRequestNotifications(['java', 'music'], 'Test Request', 'I need help with math and Java!')
 // sendHelpRequestNotifications(['test_value_1'], 'This is a test', 'Test request from the server')

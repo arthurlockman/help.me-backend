@@ -2,3 +2,5 @@ node_modules/*
 firebase.json
 cloudmessaging.json
 .vscode/launch.json
+
+npm-debug.log
