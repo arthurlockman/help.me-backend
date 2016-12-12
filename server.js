@@ -38,9 +38,10 @@ function sendHelpRequestNotifications(keywords, requestTitle, requestBody)
   profilesRef.once('value', function(v) {
     // console.log(v.val())
     for (var attributename in v.val()) {
-      var userKeywords = v.val()[attributename]['filters']
+      var userKeywords = v.val()[attributename]['filters'].join('|').toLowerCase().split('|')
       var token = v.val()[attributename]['deviceToken']
       var email = v.val()[attributename]['email']
+      var keywordsLowerCase = keywords.join('|').toLowerCase().split('|')
       var matches = keywords.some(function (v) {
         return userKeywords.indexOf(v) >= 0
       })
