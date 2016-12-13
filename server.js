@@ -5,6 +5,7 @@ var http    = require('http')
   , fcmApi  = require('fcm-node')
   , express = require('express')
   , app     = express()
+  , date    = require('date-and-time')
 
 //Configure firebase connection
 var serviceAccount = require("./firebase.json")
@@ -133,7 +134,14 @@ setInterval(function() {
   //Prune old requests
   requestRef.once('value', function(v) {
     for (var attr in v.val()) {
-      
+      var requestTime = date.parse(v.val()[attr]['expireTime'], 'DD/MM/YYYY HH:mm:ss')
+      var currentTime = new Date();
+      var isPassed  = requestTime.getTime() < Date.now()
+      if (isPassed) {
+        console.log("Pruning old request id: " + attr)
+        var snapshotRef = db.ref("/requests/" + attr)
+        snapshot.set(null)
+      }
     }
   })
 }, 1000 * 60)
