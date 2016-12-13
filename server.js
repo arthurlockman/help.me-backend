@@ -140,7 +140,7 @@ setInterval(function() {
       if (isPassed) {
         console.log("Pruning old request id: " + attr)
         var snapshotRef = db.ref("/requests/" + attr)
-        snapshot.set(null)
+        snapshotRef.set(null)
       }
     }
   })
