@@ -108,17 +108,11 @@ app.get('/chatid', function(req, res) {
     for (var attributename in v.val()) {
       var title = v.val()[attributename]['chatTitle']
       if (title === id) {
-        var data = {
-          id: attributename
-        }
-        res.end(JSON.stringify(data))
+        res.end(attributename)
         return
       }
     }
-    var data = {
-      id: 'undefined'
-    }
-    res.end(JSON.stringify(data))
+    res.end('undefined')
   })
 })
 
