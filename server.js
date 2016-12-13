@@ -46,7 +46,7 @@ function sendHelpRequestNotifications(keywords, requestTitle, requestBody)
       var token = v.val()[attributename]['deviceToken']
       var email = v.val()[attributename]['email']
       var keywordsLowerCase = keywords.join('|').toLowerCase().split('|')
-      var matches = keywords.some(function (v) {
+      var matches = keywordsLowerCase.some(function (v) {
         return userKeywords.indexOf(v) >= 0
       })
       if (matches) {
