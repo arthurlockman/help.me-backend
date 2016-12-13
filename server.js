@@ -23,6 +23,7 @@ var db = admin.database()
 var ref = db.ref("/") //use ref to get database objects
 var profilesRef = db.ref("/profiles")
 var inboxRef = db.ref("/request-inbox")
+var chatRef = db.ref("/chats")
 
 // https://firebase.google.com/docs/database/admin/retrieve-data
 // https://firebase.google.com/docs/database/admin/save-data
@@ -98,6 +99,26 @@ app.get('/topics', function(req, res) {
       }, this);
     }
     res.end(JSON.stringify(Array.from(keywords)))
+  })
+})
+
+app.get('/chatid', function(req, res) {
+  var id = req.query.id
+  chatRef.once('value', function(v) {
+    for (var attributename in v.val()) {
+      var title = v.val()[attributename]['chatTitle']
+      if (title === id) {
+        var data = {
+          id: attributename
+        }
+        res.end(JSON.stringify(data))
+        return
+      }
+    }
+    var data = {
+      id: 'undefined'
+    }
+    res.end(JSON.stringify(data))
   })
 })
 
