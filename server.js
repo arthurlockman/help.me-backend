@@ -118,17 +118,23 @@ app.get('/chatid', function(req, res) {
   })
 })
 
+function toTitleCase(str)
+{
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})
+}
+
 var server = app.listen(80, function () {
   var host = server.address().address
   var port = server.address().port
   console.log("Server listening at http://%s:%s", host, port)
 })
 
-function toTitleCase(str)
-{
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})
-}
+setInterval(function() {
+  //Prune old requests
+  requestRef.once('value', function(v) {
+    for (var attr in v.val()) {
+      
+    }
+  })
+}, 1000 * 60)
 
-// createDummyRequest(['java', 'math'], 'Test Request', 'I need help with math and Java!', 'hello@rthr.me')
-// sendHelpRequestNotifications(['java', 'music'], 'Test Request', 'I need help with math and Java!')
-// sendHelpRequestNotifications(['test_value_1'], 'This is a test', 'Test request from the server')
