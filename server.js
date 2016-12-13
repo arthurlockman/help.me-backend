@@ -22,8 +22,9 @@ admin.initializeApp({
 var db = admin.database()
 var ref = db.ref("/") //use ref to get database objects
 var profilesRef = db.ref("/profiles")
-var inboxRef = db.ref("/request-inbox")
+var inboxRef = db.ref("/requests-inbox")
 var chatRef = db.ref("/chats")
+var requestRef = db.ref("/requests")
 
 // https://firebase.google.com/docs/database/admin/retrieve-data
 // https://firebase.google.com/docs/database/admin/save-data
@@ -31,8 +32,9 @@ var chatRef = db.ref("/chats")
 inboxRef.on("child_added", function(snapshot, prevChildKey) {
   var newHelpRequest = snapshot.val()
   sendHelpRequestNotifications(newHelpRequest.topics, newHelpRequest.title, newHelpRequest.body)
-  var snapshotRef = db.ref("/request-inbox/" + snapshot.key)
-  // TODO: move to pending
+  var snapshotRef = db.ref("/requests-inbox/" + snapshot.key)
+  console.log(snapshot.val())
+  requestRef.push(snapshot.val())
   snapshotRef.set(null)
 })
 
@@ -126,6 +128,7 @@ function toTitleCase(str)
 {
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})
 }
+
 // createDummyRequest(['java', 'math'], 'Test Request', 'I need help with math and Java!', 'hello@rthr.me')
 // sendHelpRequestNotifications(['java', 'music'], 'Test Request', 'I need help with math and Java!')
 // sendHelpRequestNotifications(['test_value_1'], 'This is a test', 'Test request from the server')
