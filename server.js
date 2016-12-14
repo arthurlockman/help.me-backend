@@ -8,6 +8,7 @@ var http    = require('http')
   , date    = require('date-and-time')
 
 //Configure firebase connection
+//These files are private keys and not included
 var serviceAccount = require("./firebase.json")
 var cloudMessagingAccount = require("./cloudmessaging.json")
 
@@ -30,6 +31,8 @@ var requestRef = db.ref("/requests")
 // https://firebase.google.com/docs/database/admin/retrieve-data
 // https://firebase.google.com/docs/database/admin/save-data
 
+//Fire when a new request is added to the db
+//Move request to the proper box and send notifications
 inboxRef.on("child_added", function(snapshot, prevChildKey) {
   var newHelpRequest = snapshot.val()
   sendHelpRequestNotifications(newHelpRequest.topics, newHelpRequest.title, newHelpRequest.body)
@@ -39,6 +42,7 @@ inboxRef.on("child_added", function(snapshot, prevChildKey) {
   snapshotRef.set(null)
 })
 
+//Send notifications to users whose filters match the request
 function sendHelpRequestNotifications(keywords, requestTitle, requestBody)
 {
   profilesRef.once('value', function(v) {
@@ -58,6 +62,7 @@ function sendHelpRequestNotifications(keywords, requestTitle, requestBody)
   })
 }
 
+//Actually push out the notification
 function sendNotificaton(token, title, body) {
   var message = {
           to: token,
@@ -80,6 +85,7 @@ function sendNotificaton(token, title, body) {
   })
 }
 
+//Create a dummy notification for testing
 function createDummyRequest(keywords, title, body, username) {
   inboxRef.push().set({
     topics: keywords,
@@ -89,6 +95,7 @@ function createDummyRequest(keywords, title, body, username) {
   })
 }
 
+//Handle when a REST call is made to get a list of topics for requests
 app.get('/topics', function(req, res) {
   var data = {
     test: 'test'
@@ -105,6 +112,7 @@ app.get('/topics', function(req, res) {
   })
 })
 
+//Get a firebase ID for a chat
 app.get('/chatid', function(req, res) {
   var id = req.query.id
   chatRef.once('value', function(v) {
@@ -119,17 +127,20 @@ app.get('/chatid', function(req, res) {
   })
 })
 
+//Convert topic to title case
 function toTitleCase(str)
 {
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})
 }
 
+//Set up server for REST API
 var server = app.listen(80, function () {
   var host = server.address().address
   var port = server.address().port
   console.log("Server listening at http://%s:%s", host, port)
 })
 
+//Prune old requests from database
 setInterval(function() {
   //Prune old requests
   requestRef.once('value', function(v) {
